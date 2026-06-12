@@ -1033,6 +1033,58 @@
             XLSX.utils.book_append_sheet(wb, wsReflexos, "Reflexos");
         }
 
+        // --- NOVA GUIA: valores_totais_a_copiar ---
+        let dataValoresTotais = [["Competência", "Natureza", "Valor Recebido", "Valor Devido", "Diferença"]];
+
+        // Valores Ordinários
+        state.resultados.forEach(r => {
+            dataValoresTotais.push([r.comp, "Ordinário", r.totalRec, r.totalDev, r.dif]);
+        });
+
+        // Gratificação Natalina
+        state.reflexos.natalina.forEach(ref => {
+            if (ref.compBase) {
+                dataValoresTotais.push([ref.compBase, "Gratificação Natalina", ref.refRec, ref.refDev, ref.refDif]);
+            }
+        });
+
+        // 1/3 Férias
+        state.reflexos.ferias.forEach(ref => {
+            if (ref.compBase) {
+                dataValoresTotais.push([ref.compBase, "1/3 Férias", ref.refRec, ref.refDev, ref.refDif]);
+            }
+        });
+
+        // Ordenar por Competência (crescente) e depois por Natureza (Ordinário, Natalina, Férias)
+        const ordemNatureza = {"Ordinário": 1, "Gratificação Natalina": 2, "1/3 Férias": 3};
+        dataValoresTotais.sort((a, b) => {
+            // Pular o cabeçalho (índice 0)
+            if (a[0] === "Competência") return -1;
+            if (b[0] === "Competência") return 1;
+
+            // Comparar competências (formato MM/AAAA)
+            if (a[0] !== b[0]) {
+                const [mA, aA] = a[0].split('/');
+                const [mB, aB] = b[0].split('/');
+                const dateA = new Date(parseInt(aA), parseInt(mA) - 1, 1);
+                const dateB = new Date(parseInt(aB), parseInt(mB) - 1, 1);
+                return dateA - dateB;
+            }
+            // Mesma competência: ordenar por natureza
+            return (ordemNatureza[a[1]] || 99) - (ordemNatureza[b[1]] || 99);
+        });
+
+        const wsValoresTotais = XLSX.utils.aoa_to_sheet(dataValoresTotais);
+        wsValoresTotais['!cols'] = [
+            { wch: 12 },
+            { wch: 25 },
+            { wch: 18 },
+            { wch: 18 },
+            { wch: 18 }
+        ];
+        XLSX.utils.book_append_sheet(wb, wsValoresTotais, "valores_totais_a_copiar");
+        // --- FIM DA NOVA GUIA ---
+
         autoSaveState();
         let p = state.meta;
         let dataParams = [
