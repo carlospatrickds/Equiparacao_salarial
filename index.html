@@ -152,12 +152,12 @@
         .col-tot  { width: 88px; }
         .col-dif  { width: 110px; }
 
-	 /* --- TABELAS DA ABA 4 (REFLEXOS) --- */
-	.tbl-reflexos { table-layout: auto; }
-	.tbl-reflexos th { font-size: 1.09em; padding: 12px 8px; white-space: nowrap; }
-	.tbl-reflexos td { padding: 10px 8px; font-size: 1.09em; }
-	.tbl-reflexos select { font-family: inherit; font-size: 1.02em; background-color: var(--bg-container); border: 1px solid var(--border-main); border-radius: 4px; padding: 6px 8px; }
-	.tbl-reflexos input[type="text"] { font-family: inherit; font-size: 1.02em; background-color: var(--bg-container); border: 1px solid var(--border-main); border-radius: 4px; padding: 6px 8px; }
+        /* --- TABELAS DA ABA 4 (REFLEXOS) --- */
+        .tbl-reflexos { table-layout: auto; }
+        .tbl-reflexos th { font-size: 1.09em; padding: 12px 8px; white-space: nowrap; }
+        .tbl-reflexos td { padding: 10px 8px; font-size: 1.09em; }
+        .tbl-reflexos select { font-family: inherit; font-size: 1.02em; background-color: var(--bg-container); border: 1px solid var(--border-main); border-radius: 4px; padding: 6px 8px; }
+        .tbl-reflexos input[type="text"] { font-family: inherit; font-size: 1.02em; background-color: var(--bg-container); border: 1px solid var(--border-main); border-radius: 4px; padding: 6px 8px; }
 
         /* --- CARDS E RESUMOS --- */
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
@@ -215,9 +215,11 @@
             .print-totais-line .total-item:last-child { border-right: none; }
             .print-totais-line .total-item span { display: block; font-size: 6.5pt; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 2px; }
             .print-totais-line .total-item strong { display: block; color: var(--primary-dark); font-size: 10pt; font-weight: 700; }
-            .print-totais-line .total-destaque { flex: 1.5; background: var(--success); color: white; border-radius: 3px; padding: 6px 12px; }
-            .print-totais-line .total-destaque span { color: #e6f9ec; }
-            .print-totais-line .total-destaque strong { color: white; font-size: 11pt; }
+            
+            /* Destaque Consolidado no PDF (Total Geral Com Reflexos) */
+            .print-totais-line .total-destaque { flex: 1.5; background: #E3C896 !important; color: black !important; border-radius: 3px; padding: 6px 12px; }
+            .print-totais-line .total-destaque span { color: black !important; }
+            .print-totais-line .total-destaque strong { color: black !important; font-size: 13pt; }
             
             /* Reflexos na Impressão */
             .print-reflexos-box { margin-top: 20px; page-break-inside: avoid; }
@@ -1065,6 +1067,12 @@
         autoSaveState();
         let p = state.meta;
 
+        // Cálculos do Resumo Consolidado para o topo do PDF
+        let tAba3 = state.resultados.reduce((acc, r) => acc + r.dif, 0);
+        let tNat = state.reflexos.natalina.reduce((acc, r) => acc + r.refDif, 0);
+        let tFer = state.reflexos.ferias.reduce((acc, r) => acc + r.refDif, 0);
+        let tGeral = tAba3 + tNat + tFer;
+
         let html = `
             <div class="print-header-box">
                 <h1>Relatório de Equiparação Salarial ${p.procAssunto ? `- ${p.procAssunto}` : ''}</h1>
@@ -1081,11 +1089,11 @@
                 ${p.obsCalculo ? `<div style="font-size: 8.5pt; margin-top: 10px;"><strong>Observações do Cálculo:</strong> ${p.obsCalculo}</div>` : ''}
             </div>
             
-            <h3 style="font-size: 11pt; color: var(--primary-dark); border-bottom: 1px solid #ccc;">Resumo da Diferença Apurada</h3>
+            <h3 style="font-size: 11pt; color: var(--primary-dark); border-bottom: 1px solid #ccc;">Resumo Financeiro Consolidado</h3>
             <div class="print-totais-line">
                 <div class="total-item"><span>Total Recebido</span><strong>${document.getElementById('resTotRec').innerText}</strong></div>
                 <div class="total-item"><span>Total Devido</span><strong>${document.getElementById('resTotDev').innerText}</strong></div>
-                <div class="total-item total-destaque"><span>DIFERENÇA FINAL</span><strong>${document.getElementById('resTotDif').innerText}</strong></div>
+                <div class="total-item total-destaque"><span>TOTAL GERAL COM REFLEXOS</span><strong>${fmtMoeda(tGeral)}</strong></div>
             </div>
 
             <h3 style="font-size: 11pt; color: var(--primary-dark); margin-top: 20px; border-bottom: 1px solid #ccc;">Detalhamento de Cálculos</h3>
@@ -1129,17 +1137,12 @@
                 html += tblFer.outerHTML;
             }
 
-            let tAba3 = state.resultados.reduce((acc, r) => acc + r.dif, 0);
-            let tNat = state.reflexos.natalina.reduce((acc, r) => acc + r.refDif, 0);
-            let tFer = state.reflexos.ferias.reduce((acc, r) => acc + r.refDif, 0);
-            let tGeral = tAba3 + tNat + tFer;
-
             html += `
             <div class="print-totais-line" style="margin-top: 15px;">
                 <div class="total-item"><span>Total Diferença Principal</span><strong>${fmtMoeda(tAba3)}</strong></div>
                 <div class="total-item"><span>Total Ref. Natalina</span><strong>${fmtMoeda(tNat)}</strong></div>
                 <div class="total-item"><span>Total Ref. Férias</span><strong>${fmtMoeda(tFer)}</strong></div>
-                <div class="total-item total-destaque" style="background: var(--success);"><span>TOTAL GERAL COM REFLEXOS</span><strong>${fmtMoeda(tGeral)}</strong></div>
+                <div class="total-item total-destaque"><span>TOTAL GERAL COM REFLEXOS</span><strong>${fmtMoeda(tGeral)}</strong></div>
             </div>
             `;
             
