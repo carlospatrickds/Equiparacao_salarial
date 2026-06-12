@@ -460,7 +460,7 @@
             </div>
             <div class="card" style="border-color: var(--success); background-color: #f4fdf8;">
                 <div class="card-header"><span style="color: var(--success);">TOTAL GERAL COM REFLEXOS</span></div>
-                <div class="card-row card-total"><span id="resRefGeral" style="color: var(--success); font-size: 1.4em;">R$ 0,00</span></div>
+                <div class="card-row card-total"><span id="resRefGeral" style="color: var(--success); font-size: 1.9em;">R$ 0,00</span></div>
             </div>
         </div>
     </div>
@@ -800,7 +800,7 @@
                 <td style="color:var(--info);">${fmtMoeda(tRecGeral)}</td>
                 <td colspan="${ativasDev.length + 1}" style="border-left: 2px solid var(--border-main);"></td>
                 <td style="color:var(--primary);">${fmtMoeda(tDevGeral)}</td>
-                <td style="color:var(--success); font-size: 1.1em;">${fmtMoeda(tDifGeral)}</td>
+                <td style="color:var(--success); font-size: 1.3em;">${fmtMoeda(tDifGeral)}</td>
             </tr>
         `;
 
@@ -1091,8 +1091,9 @@
             
             <h3 style="font-size: 11pt; color: var(--primary-dark); border-bottom: 1px solid #ccc;">Resumo Financeiro Consolidado</h3>
             <div class="print-totais-line">
-                <div class="total-item"><span>Total Recebido</span><strong>${document.getElementById('resTotRec').innerText}</strong></div>
-                <div class="total-item"><span>Total Devido</span><strong>${document.getElementById('resTotDev').innerText}</strong></div>
+                <div class="total-item"><span>Total Diferença Principal</span><strong>${fmtMoeda(tAba3)}</strong></div>
+                <div class="total-item"><span>Total Ref. Natalina</span><strong>${fmtMoeda(tNat)}</strong></div>
+                <div class="total-item"><span>Total Ref. Férias</span><strong>${fmtMoeda(tFer)}</strong></div>
                 <div class="total-item total-destaque"><span>TOTAL GERAL COM REFLEXOS</span><strong>${fmtMoeda(tGeral)}</strong></div>
             </div>
 
