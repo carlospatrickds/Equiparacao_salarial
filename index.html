@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Judicial - Equiparação Salarial</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* --- DESIGN SYSTEM (PRESERVADO) --- */
+        :root {
+            --primary: #BE5014;
+            --primary-dark: #692A08;
+            --salmon-light: #FFC599;
+            --salmon-soft: #FFECD9;
+            --text-main: #2F3640;
+            --text-secondary: #7F8C8D;
+            --text-muted: #95A5A6;
+            --bg-main: #F8F9FA;
+            --bg-container: #FFFFFF;
+            --border-main: #DCDDE1;
+            --border-accent: #DCA377;
+            --info: #2980B9;
+            --danger: #E74C3C;
+            --success: #27AE60;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 30px 20px;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            background: var(--bg-container);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* --- TIPOGRAFIA E HIERARQUIA --- */
+        h1 { color: var(--primary-dark); border-left: 6px solid var(--primary); padding-left: 15px; margin-top: 0; font-size: 1.8em; }
+        h2 { color: var(--primary); font-size: 1.3em; border-bottom: 2px solid var(--salmon-soft); padding-bottom: 8px; margin-top: 30px; }
+        h3 { color: var(--primary-dark); font-size: 1.1em; }
+        h4 { color: var(--text-secondary); margin-bottom: 10px; font-size: 1em; border-bottom: 1px dashed var(--border-main); padding-bottom: 5px; }
+
+        /* --- LAYOUT E FORMS --- */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 15px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 15px; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; margin-bottom: 15px; }
+        
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; margin-bottom: 6px; font-size: 0.9em; color: var(--text-secondary); }
+        
+        input, select, textarea {
+            padding: 10px; border: 1px solid var(--border-main); border-radius: 4px;
+            font-size: 1em; background-color: var(--bg-container); color: var(--text-main);
+            transition: border-color 0.2s; font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        input[type="checkbox"] { transform: scale(1.2); cursor: pointer; margin-right: 8px; }
+
+        /* --- BOTÕES --- */
+        .top-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .btn {
+            padding: 8px 16px; border: none; border-radius: 4px; font-weight: 600;
+            cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-flex;
+            align-items: center; justify-content: center; font-size: 0.9em; gap: 5px;
+        }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--primary-dark); }
+        .btn-outline { background-color: transparent; border: 1px solid var(--border-main); color: var(--text-main); }
+        .btn-outline:hover, .btn-outline.active { border-color: var(--primary); color: var(--primary); }
+        .btn-success { background-color: var(--success); color: white; }
+        .btn-success:hover { background-color: #1e8449; }
+        .btn-danger { color: var(--danger); border: 1px solid var(--danger); background: transparent; }
+        .btn-danger:hover { background: var(--danger); color: white; }
+
+        /* --- ABAS --- */
+        .tabs { display: flex; gap: 5px; border-bottom: 2px solid var(--salmon-light); margin-bottom: 20px; }
+        .tab-btn {
+            background: transparent; border: none; padding: 12px 20px; font-size: 1em;
+            font-weight: bold; color: var(--text-secondary); cursor: pointer;
+            border-radius: 6px 6px 0 0; transition: 0.2s;
+        }
+        .tab-btn.active { background: var(--salmon-light); color: var(--primary-dark); }
+        .tab-content { display: none; animation: fadeIn 0.2s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- TABELAS UI --- */
+        .table-responsive { overflow-x: auto; margin-top: 15px; border: 1px solid var(--border-main); border-radius: 4px;}
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        th { background-color: var(--salmon-light); color: var(--primary-dark); padding: 12px 8px; border: 1px solid var(--border-accent); font-weight: 700; text-align: right;}
+        th.center, td.center { text-align: center; }
+        th.left, td.left { text-align: left; }
+        td { padding: 8px; border: 1px solid var(--border-main); text-align: right; vertical-align: middle; }
+        tr:nth-child(even) { background-color: var(--bg-main); }
+        tr:hover { background-color: rgba(0,0,0,0.02); }
+        
+        .alert-text { color: var(--danger) !important; font-weight: bold; }
+        
+        .input-tbl { 
+            width: 100px; padding: 6px; text-align: right; 
+            font-family: inherit; font-size: 0.9em; font-weight: 400; color: var(--text-main);
+            border: 1px solid transparent; background: transparent; border-bottom: 1px dashed var(--border-accent); 
+        }
+        .input-tbl:focus { background: var(--bg-container); border: 1px solid var(--primary); }
+        .input-tbl.left { text-align: left; width: 100%; min-width: 120px; }
+        .hidden { display: none !important; }
+
+        /* --- CARDS E RESUMOS --- */
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card { background: var(--bg-container); border: 1px solid var(--border-accent); border-radius: 6px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .card-header { font-weight: 700; color: var(--primary-dark); border-bottom: 1px solid var(--salmon-light); padding-bottom: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .card-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.95em; color: var(--text-main); }
+        .card-total { font-weight: bold; font-size: 1.1em; color: var(--primary-dark); border-top: 1px solid var(--border-main); padding-top: 8px; margin-top: 5px; }
+
+        /* --- RUBRICAS CONFIG --- */
+        .rubrica-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; padding: 8px; background: var(--bg-main); border-radius: 4px; border: 1px solid var(--border-main); }
+        .rubrica-row input[type="text"] { flex-grow: 1; padding: 6px; }
+        .rubrica-row .perc-box { display: flex; align-items: center; gap: 5px; }
+        .rubrica-row .perc-box input { width: 60px; text-align: right; padding: 6px; }
+
+        /* --- MODO IMPRESSÃO DEDICADO --- */
+        #printArea { display: none; }
+        
+        @media print {
+            body { background: white; padding: 0; margin: 0; font-size: 9pt; color: #000; }
+            .container { display: none !important; }
+            
+            #printArea { display: block !important; width: 100%; max-width: 100%; }
+            @page { size: portrait; margin: 15mm; }
+            
+            .print-header-box { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 20px; }
+            .print-header-box h1 { margin: 0 0 15px 0; font-size: 16pt; color: var(--primary-dark); border-left: 6px solid var(--primary); padding-left: 12px; font-weight: bold; }
+            
+            .print-params { font-size: 9pt; line-height: 1.5; margin-bottom: 10px; }
+            .print-params strong { color: var(--primary-dark); }
+            
+            #printArea table { width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 20px; page-break-inside: auto; }
+            #printArea tr { page-break-inside: avoid; page-break-after: auto; }
+            #printArea th { background-color: var(--salmon-soft) !important; color: black; -webkit-print-color-adjust: exact; padding: 6px; border: 1px solid #ccc; text-align: right; }
+            #printArea th.center { text-align: center; }
+            #printArea th.left { text-align: left; }
+            #printArea td { padding: 4px; border: 1px solid #ccc; text-align: right; }
+            #printArea td.center { text-align: center; }
+            #printArea td.left { text-align: left; }
+            
+            .print-summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; page-break-inside: avoid; }
+            .print-card { border: 1px solid #ccc; padding: 10px; border-radius: 4px; }
+            .print-card-header { font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 5px; }
+            
+            .print-totais-line { display: flex; gap: 6px; background: var(--salmon-soft); border: 1px solid var(--border-accent); border-radius: 4px; padding: 6px; margin-top: 10px; page-break-inside: avoid; -webkit-print-color-adjust: exact; }
+            .print-totais-line .total-item { flex: 1; text-align: right; padding: 4px 8px; border-right: 1px solid var(--border-accent); }
+            .print-totais-line .total-item:last-child { border-right: none; }
+            .print-totais-line .total-item span { display: block; font-size: 7pt; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 2px; }
+            .print-totais-line .total-item strong { display: block; color: var(--primary-dark); font-size: 10pt; font-weight: 700; }
+            .print-totais-line .total-destaque { flex: 1.5; background: var(--primary); color: white; border-radius: 3px; padding: 6px 12px; }
+            .print-totais-line .total-destaque span { color: var(--salmon-soft); }
+            .print-totais-line .total-destaque strong { color: white; font-size: 12pt; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container no-print" id="appContainer">
+    <div class="top-bar">
+        <button class="btn btn-danger" onclick="novoCalculo()">🧹 Novo Cálculo</button>
+        <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">📂 Carregar JSON</button>
+        <input type="file" id="fileInput" class="hidden" accept=".json" onchange="carregarJSON(this)">
+        <button class="btn btn-primary" onclick="salvarJSON()">💾 Salvar Projeto</button>
+        <button class="btn btn-success" onclick="exportarExcel()">📊 Exportar Excel</button>
+        <button class="btn btn-primary" onclick="prepararEImprimir()">🖨️ Gerar PDF</button>
+    </div>
+
+    <h1>Equiparação Salarial - Calculadora Judicial</h1>
+    
+    <div class="tabs" style="margin-top: 20px;">
+        <button class="tab-btn active" onclick="openTab('tab1', this)">1. Dados Básicos</button>
+        <button class="tab-btn" onclick="openTab('tab2', this)">2. Blocos e Rubricas</button>
+        <button class="tab-btn" onclick="openTab('tab3', this)">3. Relatório Automático</button>
+    </div>
+
+    <div id="tab1" class="tab-content active">
+        <h2>Informações do Processo</h2>
+        <div class="grid-2">
+            <div class="form-group"><label>Processo nº</label><input type="text" id="procNumero" onblur="autoSaveState()"></div>
+            <div class="form-group"><label>Assunto</label><input type="text" id="procAssunto" onblur="autoSaveState()"></div>
+            <div class="form-group"><label>Parte Autora</label><input type="text" id="procAutor" onblur="autoSaveState()"></div>
+            <div class="form-group"><label>Réu</label><input type="text" id="procReu" onblur="autoSaveState()"></div>
+        </div>
+
+        <h2>Parâmetros Temporais</h2>
+        <div class="grid-3">
+            <div class="form-group">
+                <label>Data do Ajuizamento (dd/mm/aaaa)</label>
+                <input type="date" id="dataAjuizamento" onchange="calcDataInicial()">
+            </div>
+            <div class="form-group">
+                <label>Data Inicial do Cálculo (dd/mm/aaaa)</label>
+                <input type="date" id="dataInicial" onchange="autoSaveState()">
+                <small style="color:var(--text-secondary); margin-top:4px;">* Padrão: retroage 5 anos do ajuizamento.</small>
+            </div>
+            <div class="form-group">
+                <label>Competência Final (mm/aaaa)</label>
+                <input type="text" id="compFinal" placeholder="MM/AAAA" oninput="mascaraMesAno(this)" onblur="formataMesAno(this); autoSaveState()">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 15px;">
+            <label>Observações</label>
+            <textarea id="obsCalculo" rows="3" placeholder="Insira aqui observações complementares, exclusões ou termos de acordo..." onblur="autoSaveState()"></textarea>
+        </div>
+    </div>
+
+    <div id="tab2" class="tab-content">
+        <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 20px;">
+            Lance <strong>apenas as competências em que houve mudança de valor</strong>. O sistema preencherá automaticamente os meses repetidos até a próxima mudança.
+        </p>
+        <div class="grid-2">
+            
+            <div class="card" style="border-top: 4px solid var(--info);">
+                <h3>Bloco 1: Cargo Atual / Recebido</h3>
+                
+                <h4>Configuração de Rubricas (Incisão sobre o VB)</h4>
+                <div id="container-rub-rec">
+                    </div>
+
+                <h4 style="margin-top: 20px;">Evolução do Vencimento Básico (VB)</h4>
+                <div class="table-responsive">
+                    <table id="tblFaixasRec">
+                        <thead>
+                            <tr>
+                                <th class="center" style="width: 100px;">Competência</th>
+                                <th>VB Recebido (R$)</th>
+                                <th class="center" style="width: 50px;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyFaixasRec"></tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-outline" onclick="addFaixa('rec')">➕ Adicionar Alteração de VB</button>
+                </div>
+            </div>
+
+            <div class="card" style="border-top: 4px solid var(--primary);">
+                <h3>Bloco 2: Cargo Pretendido / Devido</h3>
+                
+                <h4>Configuração de Rubricas (Incisão sobre o VB)</h4>
+                <div id="container-rub-dev">
+                    </div>
+
+                <h4 style="margin-top: 20px;">Evolução do Vencimento Básico (VB)</h4>
+                <div class="table-responsive">
+                    <table id="tblFaixasDev">
+                        <thead>
+                            <tr>
+                                <th class="center" style="width: 100px;">Competência</th>
+                                <th>VB Devido (R$)</th>
+                                <th class="center" style="width: 50px;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyFaixasDev"></tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-outline" onclick="addFaixa('dev')">➕ Adicionar Alteração de VB</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="tab3" class="tab-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Demonstrativo de Equiparação</h2>
+            <button class="btn btn-primary" style="padding: 12px 24px; font-size: 1.1em;" onclick="gerarRelatorio()">🧮 Gerar / Atualizar Relatório</button>
+        </div>
+
+        <div id="relatorioContainer" class="hidden">
+            <div class="summary-grid">
+                <div class="card" style="border-color: var(--info);">
+                    <div class="card-header"><span style="color: var(--info);">1. Total Recebido</span></div>
+                    <div class="card-row card-total"><span id="resTotRec">R$ 0,00</span></div>
+                </div>
+                <div class="card" style="border-color: var(--primary);">
+                    <div class="card-header"><span>2. Total Devido</span></div>
+                    <div class="card-row card-total"><span id="resTotDev">R$ 0,00</span></div>
+                </div>
+                <div class="card" style="border-color: var(--success); background-color: #f4fdf8;">
+                    <div class="card-header"><span style="color: var(--success);">3. Diferença Final Apurada</span></div>
+                    <div class="card-row card-total"><span id="resTotDif" style="color: var(--success); font-size: 1.4em;">R$ 0,00</span></div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">Detalhamento Competência a Competência</h3>
+            <div class="table-responsive">
+                <table id="tblRelatorio">
+                    <thead id="headRelatorio">
+                        </thead>
+                    <tbody id="bodyRelatorio"></tbody>
+                    <tfoot id="footRelatorio" style="font-weight: bold; background: var(--salmon-soft);"></tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="printArea"></div>
+
+<script>
+    // --- ESTADO DA APLICAÇÃO ---
+    let state = {
+        meta: {},
+        rubricas: {
+            rec: [
+                { id: 'r1', ativa: false, nome: 'Anuênio', percent: 5.00 },
+                { id: 'r2', ativa: false, nome: 'Índice de Qualificação (IQ)', percent: 10.00 },
+                { id: 'r3', ativa: false, nome: 'Insalubridade', percent: 20.00 },
+                { id: 'r4', ativa: false, nome: 'Adicional Noturno', percent: 25.00 }
+            ],
+            dev: [
+                { id: 'd1', ativa: false, nome: 'Anuênio', percent: 5.00 },
+                { id: 'd2', ativa: false, nome: 'Índice de Qualificação (IQ)', percent: 10.00 },
+                { id: 'd3', ativa: false, nome: 'Insalubridade', percent: 20.00 },
+                { id: 'd4', ativa: false, nome: 'Adicional Noturno', percent: 25.00 }
+            ]
+        },
+        faixas: {
+            rec: [], // { comp: '05/2021', vb: 2446.96, dt: Date }
+            dev: []
+        },
+        resultados: [] // Guarda o relatório processado
+    };
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+        renderRubricas();
+        renderFaixas('rec');
+        renderFaixas('dev');
+    });
+
+    // --- UTILS FORMATADORES ---
+    const fmtMoeda = (v) => (v||0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    
+    const parseNum = (s) => {
+        if (typeof s === 'number') return s;
+        if (!s) return 0;
+        let n = s.toString().replace(/[^\d,-]/g, '').replace(',', '.');
+        return parseFloat(n) || 0;
+    };
+
+    function mascaraMoeda(input) {
+        let v = input.value.replace(/\D/g, '');
+        if (v === '') { input.value = ''; return; }
+        v = (parseInt(v) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        input.value = v;
+    }
+
+    function mascaraMesAno(input) {
+        let v = input.value.replace(/\D/g, '');
+        if (v.length > 6) v = v.substring(0, 6);
+        if (v.length >= 3) v = v.substring(0, 2) + '/' + v.substring(2);
+        input.value = v;
+    }
+
+    function normalizaMesAno(str) {
+        if (!str) return '';
+        let s = str.toString().toLowerCase().trim();
+        let matchFullDate = s.match(/^(\d{1,2})[\/\-\s]+(\d{1,2})[\/\-\s]+(\d{2,4})$/);
+        if (matchFullDate) {
+            let mes = matchFullDate[2].padStart(2, '0');
+            let ano = matchFullDate[3];
+            if (ano.length === 2) ano = parseInt(ano) < 50 ? '20' + ano : '19' + ano;
+            return `${mes}/${ano}`;
+        }
+        let match = s.match(/(?:([a-zç]{3,})\.?|(\d{1,2}))[\/\-\s]+(\d{2,4})/i);
+        if (!match) return s;
+        let mesStr = match[1];
+        let mesNum = match[2];
+        let anoStr = match[3];
+        let mes = '';
+        if (mesNum) mes = mesNum.padStart(2, '0');
+        else if (mesStr) {
+            const mapa = { 'jan':'01', 'fev':'02', 'mar':'03', 'abr':'04', 'mai':'05', 'jun':'06', 'jul':'07', 'ago':'08', 'set':'09', 'out':'10', 'nov':'11', 'dez':'12' };
+            mes = mapa[mesStr.substring(0,3)] || '00';
+        }
+        let ano = anoStr;
+        if (ano.length === 2) ano = parseInt(ano) < 50 ? '20' + ano : '19' + ano;
+        return `${mes}/${ano}`;
+    }
+
+    function formataMesAno(el) { if(el.value) el.value = normalizaMesAno(el.value); }
+
+    function parseMesAnoToDate(str) {
+        let [m, y] = str.split('/');
+        return new Date(y, parseInt(m) - 1, 1);
+    }
+
+    function openTab(tabId, btn) {
+        document.querySelectorAll('.tab-content, .tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // --- REGRAS DE NEGÓCIO E UI ---
+
+    function calcDataInicial() {
+        const ajuStr = document.getElementById('dataAjuizamento').value;
+        if (ajuStr) {
+            let d = new Date(ajuStr);
+            d.setFullYear(d.getFullYear() - 5);
+            document.getElementById('dataInicial').value = d.toISOString().split('T')[0];
+        } else {
+            document.getElementById('dataInicial').value = '';
+        }
+        autoSaveState();
+    }
+
+    // Renderiza as configurações de rubricas dinâmicas
+    function renderRubricas() {
+        ['rec', 'dev'].forEach(tipo => {
+            const container = document.getElementById(`container-rub-${tipo}`);
+            let html = '';
+            state.rubricas[tipo].forEach((rub, idx) => {
+                let divAtiva = rub.ativa ? '' : 'opacity: 0.6;';
+                html += `
+                    <div class="rubrica-row" style="${divAtiva}">
+                        <input type="checkbox" ${rub.ativa ? 'checked' : ''} onchange="atualizaRubrica('${tipo}', ${idx}, 'ativa', this.checked)">
+                        <input type="text" value="${rub.nome}" placeholder="Nome da Rubrica" onblur="atualizaRubrica('${tipo}', ${idx}, 'nome', this.value)">
+                        <div class="perc-box">
+                            <label>%</label>
+                            <input type="text" inputmode="decimal" value="${fmtMoeda(rub.percent)}" oninput="mascaraMoeda(this)" onblur="atualizaRubrica('${tipo}', ${idx}, 'percent', this.value)">
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        });
+    }
+
+    function atualizaRubrica(tipo, idx, field, value) {
+        if (field === 'percent') value = parseNum(value);
+        state.rubricas[tipo][idx][field] = value;
+        if (field === 'ativa') renderRubricas();
+    }
+
+    // Lançamento de Faixas
+    function addFaixa(tipo) {
+        state.faixas[tipo].push({ comp: '', vb: 0 });
+        renderFaixas(tipo);
+    }
+
+    function deleteFaixa(tipo, idx) {
+        state.faixas[tipo].splice(idx, 1);
+        renderFaixas(tipo);
+    }
+
+    function renderFaixas(tipo) {
+        const tbody = document.getElementById(`bodyFaixas${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
+        let html = '';
+        state.faixas[tipo].forEach((f, i) => {
+            html += `
+                <tr>
+                    <td class="center"><input type="text" class="input-tbl center" style="width: 80px;" placeholder="MM/AAAA" value="${f.comp}" oninput="mascaraMesAno(this)" onblur="atualizaFaixa('${tipo}', ${i}, 'comp', this.value)"></td>
+                    <td><input type="text" inputmode="decimal" class="input-tbl" value="${fmtMoeda(f.vb)}" oninput="mascaraMoeda(this)" onblur="atualizaFaixa('${tipo}', ${i}, 'vb', this.value)"></td>
+                    <td class="center"><button class="btn btn-danger" style="padding:4px 8px" onclick="deleteFaixa('${tipo}', ${i})" title="Remover">X</button></td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function atualizaFaixa(tipo, idx, field, value) {
+        if (field === 'comp') {
+            value = normalizaMesAno(value);
+            state.faixas[tipo][idx].comp = value;
+            if(value && value.match(/^\d{2}\/\d{4}$/)) {
+                state.faixas[tipo][idx].dt = parseMesAnoToDate(value);
+            }
+        } else {
+            state.faixas[tipo][idx][field] = parseNum(value);
+        }
+        // Ordena por data
+        state.faixas[tipo].sort((a,b) => {
+            if(!a.dt || !b.dt) return 0;
+            return a.dt - b.dt;
+        });
+        renderFaixas(tipo);
+    }
+
+    // --- LÓGICA DE GERAÇÃO DO RELATÓRIO (SÉRIE TEMPORAL) ---
+    function getVBNaData(d, faixasOrdenadas) {
+        let vb = 0;
+        for (let f of faixasOrdenadas) {
+            if (f.dt && f.dt <= d) {
+                vb = f.vb;
+            } else {
+                break; // como está ordenado, se passou da data, para.
+            }
+        }
+        return vb;
+    }
+
+    function gerarRelatorio() {
+        let dtIniStr = document.getElementById('dataInicial').value;
+        let compFimStr = document.getElementById('compFinal').value;
+
+        if (!dtIniStr || !compFimStr) {
+            alert("Preencha a Data Inicial e a Competência Final na Aba 1.");
+            return;
+        }
+
+        let dIniTemp = new Date(dtIniStr);
+        // O cálculo começa no dia 1 do mês da data inicial
+        let currDate = new Date(dIniTemp.getFullYear(), dIniTemp.getMonth(), 1);
+        let endDate = parseMesAnoToDate(compFimStr);
+
+        if (currDate > endDate) {
+            alert("A Data Inicial não pode ser maior que a Competência Final.");
+            return;
+        }
+
+        let ativasRec = state.rubricas.rec.filter(r => r.ativa);
+        let ativasDev = state.rubricas.dev.filter(r => r.ativa);
+
+        state.resultados = [];
+        let tRecGeral = 0, tDevGeral = 0, tDifGeral = 0;
+
+        while (currDate <= endDate) {
+            let mm = String(currDate.getMonth() + 1).padStart(2, '0');
+            let aaaa = currDate.getFullYear();
+            let compStr = `${mm}/${aaaa}`;
+
+            // Pega o VB correspondente à competência
+            let vbRec = getVBNaData(currDate, state.faixas.rec);
+            let vbDev = getVBNaData(currDate, state.faixas.dev);
+
+            // Calcula Rubricas Recebidas
+            let rRecTotal = 0;
+            let detRec = [];
+            ativasRec.forEach(r => {
+                let v = vbRec * (r.percent / 100);
+                rRecTotal += v;
+                detRec.push(v);
+            });
+
+            // Calcula Rubricas Devidas
+            let rDevTotal = 0;
+            let detDev = [];
+            ativasDev.forEach(r => {
+                let v = vbDev * (r.percent / 100);
+                rDevTotal += v;
+                detDev.push(v);
+            });
+
+            let totalRec = vbRec + rRecTotal;
+            let totalDev = vbDev + rDevTotal;
+            let dif = totalDev - totalRec;
+
+            state.resultados.push({
+                comp: compStr,
+                vbRec, detRec, totalRec,
+                vbDev, detDev, totalDev,
+                dif
+            });
+
+            tRecGeral += totalRec;
+            tDevGeral += totalDev;
+            tDifGeral += dif;
+
+            // Incrementa 1 mês
+            currDate.setMonth(currDate.getMonth() + 1);
+        }
+
+        // --- RENDERIZAR TABELA ---
+        document.getElementById('relatorioContainer').classList.remove('hidden');
+        
+        document.getElementById('resTotRec').innerText = fmtMoeda(tRecGeral);
+        document.getElementById('resTotDev').innerText = fmtMoeda(tDevGeral);
+        document.getElementById('resTotDif').innerText = fmtMoeda(tDifGeral);
+
+        let thead = document.getElementById('headRelatorio');
+        let htmlHead = `<tr><th class="center" rowspan="2">Competência</th>`;
+        
+        // Headers Recebido
+        htmlHead += `<th class="center" colspan="${2 + ativasRec.length}" style="background: var(--salmon-soft);">BLOCO 1 - RECEBIDO</th>`;
+        // Headers Devido
+        htmlHead += `<th class="center" colspan="${2 + ativasDev.length}" style="background: #e6f2ff;">BLOCO 2 - DEVIDO</th>`;
+        htmlHead += `<th class="center" rowspan="2" style="background: #f4fdf8; color: var(--success);">DIFERENÇA</th></tr><tr>`;
+
+        htmlHead += `<th>VB (R$)</th>`;
+        ativasRec.forEach(r => htmlHead += `<th>${r.nome} (${fmtMoeda(r.percent)}%)</th>`);
+        htmlHead += `<th>Total Rec.</th>`;
+
+        htmlHead += `<th style="border-left: 2px solid var(--border-main);">VB (R$)</th>`;
+        ativasDev.forEach(r => htmlHead += `<th>${r.nome} (${fmtMoeda(r.percent)}%)</th>`);
+        htmlHead += `<th>Total Dev.</th></tr>`;
+        
+        thead.innerHTML = htmlHead;
+
+        let tbody = document.getElementById('bodyRelatorio');
+        let htmlBody = '';
+        state.resultados.forEach(row => {
+            let classDif = row.dif < 0 ? 'alert-text' : '';
+            htmlBody += `<tr><td class="center">${row.comp}</td>`;
+            
+            htmlBody += `<td>${fmtMoeda(row.vbRec)}</td>`;
+            row.detRec.forEach(v => htmlBody += `<td>${fmtMoeda(v)}</td>`);
+            htmlBody += `<td style="font-weight:bold; color:var(--info);">${fmtMoeda(row.totalRec)}</td>`;
+
+            htmlBody += `<td style="border-left: 2px solid var(--border-main);">${fmtMoeda(row.vbDev)}</td>`;
+            row.detDev.forEach(v => htmlBody += `<td>${fmtMoeda(v)}</td>`);
+            htmlBody += `<td style="font-weight:bold; color:var(--primary);">${fmtMoeda(row.totalDev)}</td>`;
+
+            htmlBody += `<td class="${classDif}" style="font-weight:bold;">${fmtMoeda(row.dif)}</td></tr>`;
+        });
+        tbody.innerHTML = htmlBody;
+
+        let tfoot = document.getElementById('footRelatorio');
+        tfoot.innerHTML = `
+            <tr>
+                <td class="center">TOTAIS</td>
+                <td colspan="${ativasRec.length + 1}"></td>
+                <td style="color:var(--info);">${fmtMoeda(tRecGeral)}</td>
+                <td colspan="${ativasDev.length + 1}" style="border-left: 2px solid var(--border-main);"></td>
+                <td style="color:var(--primary);">${fmtMoeda(tDevGeral)}</td>
+                <td style="color:var(--success); font-size: 1.1em;">${fmtMoeda(tDifGeral)}</td>
+            </tr>
+        `;
+    }
+
+    // --- EXPORTAÇÃO EXCEL (SheetJS) ---
+    function exportarExcel() {
+        if (state.resultados.length === 0) return alert("Gere o relatório primeiro.");
+
+        const wb = XLSX.utils.book_new();
+
+        // ABA 1: RESUMO
+        let dataResumo = [
+            ["Resumo da Equiparação Salarial"],
+            ["Competência", "Total Recebido (R$)", "Total Devido (R$)", "Diferença Apurada (R$)"]
+        ];
+        let totR = 0, totD = 0, totDif = 0;
+        state.resultados.forEach(r => {
+            dataResumo.push([r.comp, r.totalRec, r.totalDev, r.dif]);
+            totR += r.totalRec; totD += r.totalDev; totDif += r.dif;
+        });
+        dataResumo.push(["TOTAIS", totR, totD, totDif]);
+        const wsResumo = XLSX.utils.aoa_to_sheet(dataResumo);
+        XLSX.utils.book_append_sheet(wb, wsResumo, "Resumo");
+
+        // ABA 2: DETALHAMENTO
+        let ativasRec = state.rubricas.rec.filter(r => r.ativa);
+        let ativasDev = state.rubricas.dev.filter(r => r.ativa);
+
+        let headDetalhe = ["Competência"];
+        headDetalhe.push("VB Recebido");
+        ativasRec.forEach(r => headDetalhe.push(`${r.nome} Rec.`));
+        headDetalhe.push("Total Recebido");
+        
+        headDetalhe.push("VB Devido");
+        ativasDev.forEach(r => headDetalhe.push(`${r.nome} Dev.`));
+        headDetalhe.push("Total Devido");
+        
+        headDetalhe.push("Diferença");
+
+        let dataDetalhe = [ ["Detalhamento Completo"], headDetalhe ];
+        state.resultados.forEach(r => {
+            let row = [r.comp, r.vbRec, ...r.detRec, r.totalRec, r.vbDev, ...r.detDev, r.totalDev, r.dif];
+            dataDetalhe.push(row);
+        });
+        const wsDetalhe = XLSX.utils.aoa_to_sheet(dataDetalhe);
+        XLSX.utils.book_append_sheet(wb, wsDetalhe, "Detalhamento");
+
+        // ABA 3: PARÂMETROS
+        autoSaveState();
+        let p = state.meta;
+        let dataParams = [
+            ["Parâmetros do Cálculo"],
+            ["Processo", p.procNumero || ""],
+            ["Assunto", p.procAssunto || ""],
+            ["Parte Autora", p.procAutor || ""],
+            ["Réu", p.procReu || ""],
+            ["Data Ajuizamento", p.dataAjuizamento || ""],
+            ["Data Inicial do Cálculo", p.dataInicial || ""],
+            ["Competência Final", p.compFinal || ""],
+            ["Observações", p.obsCalculo || ""]
+        ];
+        const wsParams = XLSX.utils.aoa_to_sheet(dataParams);
+        XLSX.utils.book_append_sheet(wb, wsParams, "Parâmetros");
+
+        // Salvar Arquivo
+        let nomeAuto = (p.procAutor || 'NOME').split(' ')[0].toUpperCase();
+        let ds = new Date().toISOString().slice(0,10).replace(/-/g, '');
+        XLSX.writeFile(wb, `Calculo_Equiparacao_${nomeAuto}_${ds}.xlsx`);
+    }
+
+    // --- IMPRESSÃO PDF ---
+    function prepararEImprimir() {
+        if (state.resultados.length === 0) {
+            alert("Gere o relatório na Aba 3 antes de imprimir.");
+            return;
+        }
+
+        const printArea = document.getElementById('printArea');
+        autoSaveState();
+        let p = state.meta;
+
+        let html = `
+            <div class="print-header-box">
+                <h1>Relatório de Equiparação Salarial ${p.procAssunto ? `- ${p.procAssunto}` : ''}</h1>
+                <div class="print-params">
+                    <div><strong>Processo:</strong> ${p.procNumero || '-'}</div>
+                    <div><strong>Parte Autora:</strong> ${p.procAutor || '-'}</div>
+                    <div><strong>Réu:</strong> ${p.procReu || '-'}</div>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
+                        <strong>Ajuizamento:</strong> ${p.dataAjuizamento ? p.dataAjuizamento.split('-').reverse().join('/') : '-'} &nbsp;&nbsp;|&nbsp;&nbsp; 
+                        <strong>Início do Cálculo:</strong> ${p.dataInicial ? p.dataInicial.split('-').reverse().join('/') : '-'} &nbsp;&nbsp;|&nbsp;&nbsp; 
+                        <strong>Fim do Cálculo:</strong> ${p.compFinal || '-'}
+                    </div>
+                </div>
+                ${p.obsCalculo ? `<div style="font-size: 9pt; margin-top: 10px;"><strong>Observações:</strong> ${p.obsCalculo}</div>` : ''}
+            </div>
+            
+            <h3 style="font-size: 11pt; color: var(--primary-dark); border-bottom: 1px solid #ccc;">Resumo da Diferença Apurada</h3>
+            <div class="print-totais-line">
+                <div class="total-item"><span>Total Recebido</span><strong>${document.getElementById('resTotRec').innerText}</strong></div>
+                <div class="total-item"><span>Total Devido</span><strong>${document.getElementById('resTotDev').innerText}</strong></div>
+                <div class="total-item total-destaque"><span>DIFERENÇA FINAL</span><strong>${document.getElementById('resTotDif').innerText}</strong></div>
+            </div>
+
+            <h3 style="font-size: 11pt; color: var(--primary-dark); margin-top: 20px; border-bottom: 1px solid #ccc;">Detalhamento de Cálculos</h3>
+        `;
+
+        let tblClone = document.getElementById('tblRelatorio').cloneNode(true);
+        html += tblClone.outerHTML;
+        html += `<div style="margin-top: 20px; text-align: right; font-size: 8pt; color: #555;">Relatório emitido em ${new Date().toLocaleDateString('pt-BR')}.</div>`;
+
+        printArea.innerHTML = html;
+
+        let originalTitle = document.title;
+        document.title = `Equipara_${(p.procAutor||'').split(' ')[0]}_${p.procNumero||''}`;
+        window.print();
+        document.title = originalTitle;
+    }
+
+    // --- GERENCIAMENTO DE ESTADO (JSON) ---
+    function autoSaveState() {
+        state.meta = {
+            procNumero: document.getElementById('procNumero').value,
+            procAssunto: document.getElementById('procAssunto').value,
+            procAutor: document.getElementById('procAutor').value,
+            procReu: document.getElementById('procReu').value,
+            dataAjuizamento: document.getElementById('dataAjuizamento').value,
+            dataInicial: document.getElementById('dataInicial').value,
+            compFinal: document.getElementById('compFinal').value,
+            obsCalculo: document.getElementById('obsCalculo').value
+        };
+    }
+
+    function salvarJSON() {
+        autoSaveState();
+        let p = state.meta;
+        let ds = new Date().toISOString().slice(0,10).replace(/-/g, '');
+        let filename = `Equiparacao_${(p.procAutor||'NOME').split(' ')[0]}_${ds}.json`;
+
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(state)], {type: 'application/json'}));
+        a.download = filename;
+        a.click();
+    }
+
+    function carregarJSON(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                let j = JSON.parse(e.target.result);
+                if (j.meta) {
+                    document.getElementById('procNumero').value = j.meta.procNumero || '';
+                    document.getElementById('procAssunto').value = j.meta.procAssunto || '';
+                    document.getElementById('procAutor').value = j.meta.procAutor || '';
+                    document.getElementById('procReu').value = j.meta.procReu || '';
+                    document.getElementById('dataAjuizamento').value = j.meta.dataAjuizamento || '';
+                    document.getElementById('dataInicial').value = j.meta.dataInicial || '';
+                    document.getElementById('compFinal').value = j.meta.compFinal || '';
+                    document.getElementById('obsCalculo').value = j.meta.obsCalculo || '';
+                }
+                if (j.rubricas) state.rubricas = j.rubricas;
+                if (j.faixas) {
+                    // Re-parse de datas que viraram string no JSON
+                    ['rec','dev'].forEach(t => {
+                        j.faixas[t].forEach(f => { if(f.dt) f.dt = new Date(f.dt); });
+                    });
+                    state.faixas = j.faixas;
+                }
+                
+                renderRubricas();
+                renderFaixas('rec');
+                renderFaixas('dev');
+                document.getElementById('relatorioContainer').classList.add('hidden');
+                alert("Projeto carregado com sucesso!");
+            } catch (err) {
+                alert("Erro ao ler arquivo. JSON inválido.");
+            }
+        };
+        reader.readAsText(file);
+        input.value = '';
+    }
+
+    function novoCalculo() {
+        if(!confirm("Apagar todos os dados atuais e iniciar novo cálculo?")) return;
+        document.querySelectorAll('#appContainer input:not([type="button"]):not([type="file"]), #appContainer textarea').forEach(el => el.value = '');
+        
+        state.faixas = { rec: [], dev: [] };
+        state.resultados = [];
+        state.rubricas = {
+            rec: [
+                { id: 'r1', ativa: false, nome: 'Anuênio', percent: 5.00 },
+                { id: 'r2', ativa: false, nome: 'Índice de Qualificação (IQ)', percent: 10.00 },
+                { id: 'r3', ativa: false, nome: 'Insalubridade', percent: 20.00 },
+                { id: 'r4', ativa: false, nome: 'Adicional Noturno', percent: 25.00 }
+            ],
+            dev: [
+                { id: 'd1', ativa: false, nome: 'Anuênio', percent: 5.00 },
+                { id: 'd2', ativa: false, nome: 'Índice de Qualificação (IQ)', percent: 10.00 },
+                { id: 'd3', ativa: false, nome: 'Insalubridade', percent: 20.00 },
+                { id: 'd4', ativa: false, nome: 'Adicional Noturno', percent: 25.00 }
+            ]
+        };
+        
+        renderRubricas();
+        renderFaixas('rec');
+        renderFaixas('dev');
+        document.getElementById('relatorioContainer').classList.add('hidden');
+    }
+</script>
+</body>
+</html>
