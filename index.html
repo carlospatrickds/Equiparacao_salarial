@@ -34,7 +34,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: auto;
             background: var(--bg-container);
             padding: 30px;
@@ -83,7 +83,7 @@
         .btn-link:hover { background-color: var(--info); color: white; }
 
         /* --- ABAS --- */
-        .tabs { display: flex; gap: 5px; border-bottom: 2px solid var(--salmon-light); margin-bottom: 20px; }
+        .tabs { display: flex; gap: 5px; border-bottom: 2px solid var(--salmon-light); margin-bottom: 20px; flex-wrap: wrap; }
         .tab-btn {
             background: transparent; border: none; padding: 12px 20px; font-size: 1em;
             font-weight: bold; color: var(--text-secondary); cursor: pointer;
@@ -94,16 +94,15 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- TABELAS UI --- */
+        /* --- TABELAS UI (Padrão) --- */
         .table-responsive { overflow-x: auto; margin-top: 15px; border: 1px solid var(--border-main); border-radius: 4px;}
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
-        th { background-color: var(--salmon-light); color: var(--primary-dark); padding: 12px 8px; border: 1px solid var(--border-accent); font-weight: 700; text-align: right;}
+        th { background-color: var(--salmon-light); color: var(--primary-dark); padding: 12px 8px; border: 1px solid var(--border-accent); font-weight: 700; text-align: right; }
         th.center, td.center { text-align: center; }
         th.left, td.left { text-align: left; }
         td { padding: 8px; border: 1px solid var(--border-main); text-align: right; vertical-align: middle; }
         tr:nth-child(even) { background-color: var(--bg-main); }
         tr:hover { background-color: rgba(0,0,0,0.02); }
-        
         .alert-text { color: var(--danger) !important; font-weight: bold; }
         
         .input-tbl { 
@@ -115,8 +114,53 @@
         .input-tbl.left { text-align: left; width: 100%; min-width: 120px; }
         .hidden { display: none !important; }
 
+        /* --- AUMENTAR COMPETÊNCIAS E VALORES NA TELA (ABA BLOCOS E RUBRICAS) --- */
+        #tblFaixasRec .input-tbl,
+        #tblFaixasDev .input-tbl {
+            font-size: 1.08em;
+            padding: 8px 6px;
+            font-weight: 500;
+        }
+        #tblFaixasRec td,
+        #tblFaixasDev td { padding: 10px 8px; }
+        #tblFaixasRec th,
+        #tblFaixasDev th { font-size: 1em; padding: 12px 8px; }
+
+        /* --- TABELA DE RELATÓRIO: COLGROUP & TIPOGRAFIA OTIMIZADA --- */
+        #tblRelatorio { 
+            table-layout: fixed; 
+            min-width: 100%; 
+            width: max-content; 
+            font-size: 1em;
+        }
+        #tblRelatorio thead th {
+            text-align: center; white-space: nowrap; word-break: keep-all; overflow-wrap: normal;
+            line-height: 1.3; padding: 8px 4px; font-size: 1.19em; font-weight: 700; vertical-align: middle;
+        }
+        #tblRelatorio thead th small { 
+            font-weight: 500; font-size: 0.85em; opacity: 0.85; display: block; margin-top: 2px; line-height: 1.15;
+        }
+        #tblRelatorio tbody td { padding: 9px 5px; font-size: 1.14em; font-weight: 400; vertical-align: middle; }
+        #tblRelatorio tfoot td { padding: 10px 5px; font-size: 1.15em; font-weight: 700; vertical-align: middle; }
+        
+        .col-comp { width: 90px; }
+        .col-vb   { width: 100px; }
+        .col-anu  { width: 95px; }
+        .col-iq   { width: 82px; }
+        .col-ins  { width: 82px; }
+        .col-extra{ width: 82px; }
+        .col-tot  { width: 88px; }
+        .col-dif  { width: 110px; }
+
+	 /* --- TABELAS DA ABA 4 (REFLEXOS) --- */
+	.tbl-reflexos { table-layout: auto; }
+	.tbl-reflexos th { font-size: 1.09em; padding: 12px 8px; white-space: nowrap; }
+	.tbl-reflexos td { padding: 10px 8px; font-size: 1.09em; }
+	.tbl-reflexos select { font-family: inherit; font-size: 1.02em; background-color: var(--bg-container); border: 1px solid var(--border-main); border-radius: 4px; padding: 6px 8px; }
+	.tbl-reflexos input[type="text"] { font-family: inherit; font-size: 1.02em; background-color: var(--bg-container); border: 1px solid var(--border-main); border-radius: 4px; padding: 6px 8px; }
+
         /* --- CARDS E RESUMOS --- */
-        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
         .card { background: var(--bg-container); border: 1px solid var(--border-accent); border-radius: 6px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
         .card-header { font-weight: 700; color: var(--primary-dark); border-bottom: 1px solid var(--salmon-light); padding-bottom: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; }
         .card-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.95em; color: var(--text-main); }
@@ -132,24 +176,35 @@
         #printArea { display: none; }
         
         @media print {
-            body { background: white; padding: 0; margin: 0; font-size: 8.5pt; color: #000; }
+            body { background: white; padding: 0; margin: 0; font-size: 8pt; color: #000; }
             .container { display: none !important; }
             
             #printArea { display: block !important; width: 100%; max-width: 100%; }
             @page { size: landscape; margin: 10mm; }
             
             .print-header-box { border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 15px; }
-            .print-header-box h1 { margin: 0 0 10px 0; font-size: 14pt; color: var(--primary-dark); border-left: 6px solid var(--primary); padding-left: 10px; font-weight: bold; }
+            .print-header-box h1 { margin: 0 0 8px 0; font-size: 16pt; color: var(--primary-dark); border-left: 6px solid var(--primary); padding-left: 10px; font-weight: bold; }
             
-            .print-params { font-size: 8pt; line-height: 1.4; margin-bottom: 10px; }
+            .print-params { font-size: 10pt; line-height: 1.6; margin-bottom: 10px; }
             .print-params strong { color: var(--primary-dark); }
             
-            #printArea table { width: 100%; border-collapse: collapse; font-size: 7.5pt; margin-bottom: 15px; page-break-inside: auto; word-break: break-word; }
+            /* Ajuste crítico da tabela para o PDF - tipografia otimizada */
+            #printArea table { 
+                table-layout: fixed; width: 100%; border-collapse: collapse; margin-bottom: 15px; page-break-inside: auto; 
+            }
             #printArea tr { page-break-inside: avoid; page-break-after: auto; }
-            #printArea th { background-color: var(--salmon-soft) !important; color: black; -webkit-print-color-adjust: exact; padding: 4px; border: 1px solid #ccc; text-align: right; }
-            #printArea th.center { text-align: center; }
-            #printArea td { padding: 4px; border: 1px solid #ccc; text-align: right; }
-            #printArea td.center { text-align: center; }
+            
+            #printArea thead th { 
+                background-color: var(--salmon-soft) !important; color: black; -webkit-print-color-adjust: exact;
+                padding: 5px 3px; border: 1px solid #ccc; text-align: center; font-size: 9pt; font-weight: 700;
+                white-space: nowrap; word-break: keep-all; overflow-wrap: normal; line-height: 1.15; vertical-align: middle;
+            }
+            #printArea thead th small { font-size: 8.5pt; font-weight: 500; opacity: 0.8; display: block; margin-top: 2px; }
+            #printArea tbody td { padding: 6px 3px; border: 1px solid #ccc; text-align: right; font-size: 10.2pt; font-weight: 400; vertical-align: middle; }
+            #printArea tbody td.center { text-align: center; }
+            #printArea tfoot td { padding: 7px 3px; border: 1px solid #ccc; text-align: right; font-size: 10.5pt; font-weight: 700; vertical-align: middle; }
+            
+            #printArea tfoot { display: table-row-group; }
             
             .print-summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; page-break-inside: avoid; }
             .print-card { border: 1px solid #ccc; padding: 8px; border-radius: 4px; }
@@ -162,7 +217,11 @@
             .print-totais-line .total-item strong { display: block; color: var(--primary-dark); font-size: 10pt; font-weight: 700; }
             .print-totais-line .total-destaque { flex: 1.5; background: var(--success); color: white; border-radius: 3px; padding: 6px 12px; }
             .print-totais-line .total-destaque span { color: #e6f9ec; }
-            .print-totais-line .total-destaque strong { color: white; font-size: 12pt; }
+            .print-totais-line .total-destaque strong { color: white; font-size: 11pt; }
+            
+            /* Reflexos na Impressão */
+            .print-reflexos-box { margin-top: 20px; page-break-inside: avoid; }
+            .print-obs-reflexos p { margin: 4px 0; font-size: 8.5pt; color: #333; }
         }
     </style>
 </head>
@@ -193,6 +252,7 @@
         <button class="tab-btn active" onclick="openTab('tab1', this)">1. Dados Básicos</button>
         <button class="tab-btn" onclick="openTab('tab2', this)">2. Blocos e Rubricas</button>
         <button class="tab-btn" onclick="openTab('tab3', this)">3. Relatório Automático</button>
+        <button class="tab-btn" onclick="openTab('tab4', this)" style="color: var(--success);">4. Reflexos</button>
     </div>
 
     <div id="tab1" class="tab-content active">
@@ -237,8 +297,7 @@
                 <h3>Bloco 1: Cargo Atual / Recebido</h3>
                 
                 <h4>Configuração de Rubricas (Incisão sobre o VB)</h4>
-                <div id="container-rub-rec">
-                    </div>
+                <div id="container-rub-rec"></div>
                 <button class="btn btn-outline" style="margin-top: 10px; width: 100%; border-style: dashed;" onclick="addRubricaExtra('rec')">➕ Adicionar Rubrica Extra</button>
 
                 <h4 style="margin-top: 25px;">Evolução do Vencimento Básico (VB)</h4>
@@ -263,8 +322,7 @@
                 <h3>Bloco 2: Cargo Pretendido / Devido</h3>
                 
                 <h4>Configuração de Rubricas (Incisão sobre o VB)</h4>
-                <div id="container-rub-dev">
-                    </div>
+                <div id="container-rub-dev"></div>
                 <button class="btn btn-outline" style="margin-top: 10px; width: 100%; border-style: dashed;" onclick="addRubricaExtra('dev')">➕ Adicionar Rubrica Extra</button>
 
                 <h4 style="margin-top: 25px;">Evolução do Vencimento Básico (VB)</h4>
@@ -313,8 +371,8 @@
             <h3 style="margin-top: 30px;">Detalhamento Competência a Competência</h3>
             <div class="table-responsive">
                 <table id="tblRelatorio">
-                    <thead id="headRelatorio">
-                        </thead>
+                    <colgroup id="colGroupRelatorio"></colgroup>
+                    <thead id="headRelatorio"></thead>
                     <tbody id="bodyRelatorio"></tbody>
                     <tfoot id="footRelatorio" style="font-weight: bold; background: var(--salmon-soft);"></tfoot>
                 </table>
@@ -323,6 +381,84 @@
             <div class="form-group" style="margin-top: 30px;">
                 <label style="color: var(--primary-dark); font-size: 1.1em; border-bottom: 1px solid var(--salmon-light); padding-bottom: 5px; margin-bottom: 10px;">Observações Finais do Relatório</label>
                 <textarea id="obsFinais" rows="3" placeholder="Insira aqui observações complementares, conclusões ou ressalvas finais que devam aparecer no final do PDF..." onblur="autoSaveState()"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab4" class="tab-content">
+        <h2>Reflexos Financeiros</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95em; margin-bottom: 25px;">
+            Calcule separadamente os reflexos das diferenças apuradas no demonstrativo principal (Aba 3). 
+            Selecione a competência base que gerou o direito ao reflexo.
+        </p>
+
+        <h3 style="color: var(--info); border-bottom: 2px solid var(--info); padding-bottom: 5px; margin-top: 30px;">
+            A) Reflexos de Gratificação Natalina (13º Salário)
+        </h3>
+        <div class="table-responsive">
+            <table class="tbl-reflexos" id="tblReflexosNatalina">
+                <thead style="background-color: #ebf5fb;">
+                    <tr>
+                        <th class="center" style="width: 185px;">Competência Base</th>
+                        <th class="center" style="width: 120px;">Diferença Mês</th>
+                        <th class="center" style="width: 80px;">Fator</th>
+                        <th class="center" style="width: 135px;">Reflexo Recebido</th>
+                        <th class="center" style="width: 135px;">Reflexo Devido</th>
+                        <th class="center" style="color: var(--success);">Dif. Reflexo</th>
+                        <th class="left">Observação</th>
+                        <th class="center" style="width: 60px;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyReflexosNatalina"></tbody>
+            </table>
+        </div>
+        <div style="margin-top: 10px;">
+            <button class="btn btn-outline" style="border-color: var(--info); color: var(--info);" onclick="addReflexo('natalina')">➕ Adicionar Reflexo de Gratificação Natalina</button>
+        </div>
+
+        <h3 style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 5px; margin-top: 40px;">
+            B) Reflexos de 1/3 de Férias
+        </h3>
+        <div class="table-responsive">
+            <table class="tbl-reflexos" id="tblReflexosFerias">
+                <thead style="background-color: var(--salmon-soft);">
+                    <tr>
+                        <th class="center" style="width: 185px;">Competência Base</th>
+                        <th class="center" style="width: 120px;">Diferença Mês</th>
+                        <th class="center" style="width: 80px;">Fator</th>
+                        <th class="center" style="width: 135px;">Reflexo Recebido</th>
+                        <th class="center" style="width: 135px;">Reflexo Devido</th>
+                        <th class="center" style="color: var(--success);">Dif. Reflexo</th>
+                        <th class="left">Observação</th>
+                        <th class="center" style="width: 60px;">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyReflexosFerias"></tbody>
+            </table>
+        </div>
+        <div style="margin-top: 10px;">
+            <button class="btn btn-outline" style="border-color: var(--primary); color: var(--primary);" onclick="addReflexo('ferias')">➕ Adicionar Reflexo de 1/3 de Férias</button>
+        </div>
+
+        <h3 style="color: var(--success); border-bottom: 2px solid var(--success); padding-bottom: 5px; margin-top: 40px;">
+            C) Resumo Final Consolidado
+        </h3>
+        <div class="summary-grid" style="margin-bottom: 30px;">
+            <div class="card" style="border-color: var(--border-accent);">
+                <div class="card-header"><span style="color: var(--text-main);">Diferença Aba 3 (Principal)</span></div>
+                <div class="card-row card-total"><span id="resRefAba3" style="color: var(--text-main);">R$ 0,00</span></div>
+            </div>
+            <div class="card" style="border-color: var(--info);">
+                <div class="card-header"><span style="color: var(--info);">Total Reflexos Natalina</span></div>
+                <div class="card-row card-total"><span id="resRefNat" style="color: var(--info);">R$ 0,00</span></div>
+            </div>
+            <div class="card" style="border-color: var(--primary);">
+                <div class="card-header"><span style="color: var(--primary);">Total Reflexos 1/3 Férias</span></div>
+                <div class="card-row card-total"><span id="resRefFer" style="color: var(--primary);">R$ 0,00</span></div>
+            </div>
+            <div class="card" style="border-color: var(--success); background-color: #f4fdf8;">
+                <div class="card-header"><span style="color: var(--success);">TOTAL GERAL COM REFLEXOS</span></div>
+                <div class="card-row card-total"><span id="resRefGeral" style="color: var(--success); font-size: 1.4em;">R$ 0,00</span></div>
             </div>
         </div>
     </div>
@@ -337,22 +473,26 @@
         rubricas: {
             rec: [
                 { id: 'r1', ativa: false, nome: 'Anuênio', percent: 5.00, isExtra: false },
-                { id: 'r2', ativa: false, nome: 'Índice de Qualificação (IQ)', percent: 10.00, isExtra: false },
+                { id: 'r2', ativa: false, nome: 'Índice de Qualif. (IQ)', percent: 10.00, isExtra: false },
                 { id: 'r3', ativa: false, nome: 'Insalubridade', percent: 20.00, isExtra: false },
                 { id: 'r4', ativa: false, nome: 'Adicional Noturno', percent: 25.00, isExtra: false }
             ],
             dev: [
                 { id: 'd1', ativa: false, nome: 'Anuênio', percent: 5.00, isExtra: false },
-                { id: 'd2', ativa: false, nome: 'Índice de Qualificação (IQ)', percent: 10.00, isExtra: false },
+                { id: 'd2', ativa: false, nome: 'Índice de Qualif. (IQ)', percent: 10.00, isExtra: false },
                 { id: 'd3', ativa: false, nome: 'Insalubridade', percent: 20.00, isExtra: false },
                 { id: 'd4', ativa: false, nome: 'Adicional Noturno', percent: 25.00, isExtra: false }
             ]
         },
         faixas: {
-            rec: [], // { comp: '05/2021', vb: 2446.96, dt: Date }
+            rec: [], 
             dev: []
         },
-        resultados: [] // Guarda o relatório processado
+        resultados: [],
+        reflexos: {
+            natalina: [],
+            ferias: []
+        }
     };
 
     // Inicialização
@@ -360,6 +500,7 @@
         renderRubricas();
         renderFaixas('rec');
         renderFaixas('dev');
+        renderAllReflexos();
     });
 
     // --- UTILS FORMATADORES ---
@@ -443,7 +584,6 @@
         autoSaveState();
     }
 
-    // Renderiza as configurações de rubricas dinâmicas
     function renderRubricas() {
         ['rec', 'dev'].forEach(tipo => {
             const container = document.getElementById(`container-rub-${tipo}`);
@@ -470,13 +610,7 @@
 
     function addRubricaExtra(tipo) {
         const newId = 'ex_' + Date.now();
-        state.rubricas[tipo].push({
-            id: newId,
-            ativa: true,
-            nome: 'Nova Rubrica',
-            percent: 0.00,
-            isExtra: true
-        });
+        state.rubricas[tipo].push({ id: newId, ativa: true, nome: 'Nova Rubrica', percent: 0.00, isExtra: true });
         renderRubricas();
     }
 
@@ -493,7 +627,6 @@
         if (field === 'ativa') renderRubricas();
     }
 
-    // Lançamento de Faixas
     function addFaixa(tipo) {
         state.faixas[tipo].push({ comp: '', vb: 0 });
         renderFaixas(tipo);
@@ -529,7 +662,6 @@
         } else {
             state.faixas[tipo][idx][field] = parseNum(value);
         }
-        // Ordena por data
         state.faixas[tipo].sort((a,b) => {
             if(!a.dt || !b.dt) return 0;
             return a.dt - b.dt;
@@ -537,17 +669,20 @@
         renderFaixas(tipo);
     }
 
-    // --- LÓGICA DE GERAÇÃO DO RELATÓRIO (SÉRIE TEMPORAL) ---
     function getVBNaData(d, faixasOrdenadas) {
         let vb = 0;
         for (let f of faixasOrdenadas) {
-            if (f.dt && f.dt <= d) {
-                vb = f.vb;
-            } else {
-                break; // como está ordenado, se passou da data, para.
-            }
+            if (f.dt && f.dt <= d) { vb = f.vb; } else { break; }
         }
         return vb;
+    }
+
+    function getColClass(nome) {
+        let n = nome.toLowerCase();
+        if (n.includes('anuênio')) return 'col-anu';
+        if (n.includes('iq') || n.includes('qualif')) return 'col-iq';
+        if (n.includes('insalubridade')) return 'col-ins';
+        return 'col-extra';
     }
 
     function gerarRelatorio() {
@@ -616,44 +751,42 @@
             currDate.setMonth(currDate.getMonth() + 1);
         }
 
-        // --- RENDERIZAR TABELA ---
+        // Renderiza Tabela Principal
         document.getElementById('relatorioContainer').classList.remove('hidden');
-        
         document.getElementById('resTotRec').innerText = fmtMoeda(tRecGeral);
         document.getElementById('resTotDev').innerText = fmtMoeda(tDevGeral);
         document.getElementById('resTotDif').innerText = fmtMoeda(tDifGeral);
 
+        let colGroup = `<col class="col-comp"><col class="col-vb">`;
+        ativasRec.forEach(r => colGroup += `<col class="${getColClass(r.nome)}">`);
+        colGroup += `<col class="col-tot"><col class="col-vb">`;
+        ativasDev.forEach(r => colGroup += `<col class="${getColClass(r.nome)}">`);
+        colGroup += `<col class="col-tot"><col class="col-dif">`;
+        document.getElementById('colGroupRelatorio').innerHTML = colGroup;
+
         let thead = document.getElementById('headRelatorio');
-        let htmlHead = `<tr><th class="center" rowspan="2">Competência</th>`;
-        
-        htmlHead += `<th class="center" colspan="${2 + ativasRec.length}" style="background: var(--salmon-soft);">BLOCO 1 - RECEBIDO</th>`;
-        htmlHead += `<th class="center" colspan="${2 + ativasDev.length}" style="background: #e6f2ff;">BLOCO 2 - DEVIDO</th>`;
-        htmlHead += `<th class="center" rowspan="2" style="background: #e6f9ec; color: var(--success);">DIFERENÇA</th></tr><tr>`;
-
-        htmlHead += `<th>VB (R$)</th>`;
-        ativasRec.forEach(r => htmlHead += `<th>${r.nome} (${fmtMoeda(r.percent)}%)</th>`);
-        htmlHead += `<th>Total Rec.</th>`;
-
-        htmlHead += `<th style="border-left: 2px solid var(--border-main);">VB (R$)</th>`;
-        ativasDev.forEach(r => htmlHead += `<th>${r.nome} (${fmtMoeda(r.percent)}%)</th>`);
-        htmlHead += `<th>Total Dev.</th></tr>`;
-        
+        let htmlHead = `<tr><th rowspan="2">Competência</th>`;
+        htmlHead += `<th colspan="${2 + ativasRec.length}" style="background: var(--salmon-soft);">BLOCO 1 - RECEBIDO</th>`;
+        htmlHead += `<th colspan="${2 + ativasDev.length}" style="background: #e6f2ff;">BLOCO 2 - DEVIDO</th>`;
+        htmlHead += `<th rowspan="2" style="background: #e6f9ec; color: var(--success);">DIFERENÇA</th></tr><tr>`;
+        htmlHead += `<th>VB<br><small>(R$)</small></th>`;
+        ativasRec.forEach(r => htmlHead += `<th>${r.nome}<br><small>(${fmtMoeda(r.percent)}%)</small></th>`);
+        htmlHead += `<th>Total<br><small>Rec.</small></th>`;
+        htmlHead += `<th style="border-left: 2px solid var(--border-main);">VB<br><small>(R$)</small></th>`;
+        ativasDev.forEach(r => htmlHead += `<th>${r.nome}<br><small>(${fmtMoeda(r.percent)}%)</small></th>`);
+        htmlHead += `<th>Total<br><small>Dev.</small></th></tr>`;
         thead.innerHTML = htmlHead;
 
         let tbody = document.getElementById('bodyRelatorio');
         let htmlBody = '';
         state.resultados.forEach(row => {
             let classDif = row.dif < 0 ? 'alert-text' : '';
-            htmlBody += `<tr><td class="center">${row.comp}</td>`;
-            
-            htmlBody += `<td>${fmtMoeda(row.vbRec)}</td>`;
+            htmlBody += `<tr><td class="center">${row.comp}</td><td>${fmtMoeda(row.vbRec)}</td>`;
             row.detRec.forEach(v => htmlBody += `<td>${fmtMoeda(v)}</td>`);
             htmlBody += `<td style="font-weight:bold; color:var(--info);">${fmtMoeda(row.totalRec)}</td>`;
-
             htmlBody += `<td style="border-left: 2px solid var(--border-main);">${fmtMoeda(row.vbDev)}</td>`;
             row.detDev.forEach(v => htmlBody += `<td>${fmtMoeda(v)}</td>`);
             htmlBody += `<td style="font-weight:bold; color:var(--primary);">${fmtMoeda(row.totalDev)}</td>`;
-
             htmlBody += `<td class="${classDif}" style="font-weight:bold;">${fmtMoeda(row.dif)}</td></tr>`;
         });
         tbody.innerHTML = htmlBody;
@@ -661,14 +794,163 @@
         let tfoot = document.getElementById('footRelatorio');
         tfoot.innerHTML = `
             <tr>
-                <td class="center">TOTAIS</td>
-                <td colspan="${ativasRec.length + 1}"></td>
+                <td class="center">TOTAIS</td><td colspan="${ativasRec.length + 1}"></td>
                 <td style="color:var(--info);">${fmtMoeda(tRecGeral)}</td>
                 <td colspan="${ativasDev.length + 1}" style="border-left: 2px solid var(--border-main);"></td>
                 <td style="color:var(--primary);">${fmtMoeda(tDevGeral)}</td>
                 <td style="color:var(--success); font-size: 1.1em;">${fmtMoeda(tDifGeral)}</td>
             </tr>
         `;
+
+        // Recalcular reflexos com base na nova tabela de resultados
+        recalcAllReflexos();
+    }
+
+    // =======================================================
+    // ABA 4 - REFLEXOS: LÓGICA E RENDERIZAÇÃO
+    // =======================================================
+
+    function renderAllReflexos() {
+        renderReflexoTipo('natalina');
+        renderReflexoTipo('ferias');
+        atualizarResumoReflexos();
+    }
+
+    function renderReflexoTipo(tipo) {
+        let tbody = document.getElementById(`bodyReflexos${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
+        let html = '';
+        
+        // Monta o select de competências
+        let opts = `<option value="">Selecione...</option>`;
+        if (state.resultados.length > 0) {
+            state.resultados.forEach(r => {
+                opts += `<option value="${r.comp}">${r.comp} (Dif: ${fmtMoeda(r.dif)})</option>`;
+            });
+        } else {
+            opts = `<option value="">Gere o relatório na Aba 3 primeiro...</option>`;
+        }
+
+        state.reflexos[tipo].forEach((ref, idx) => {
+            let selectHtml = opts;
+            if (ref.compBase) {
+                selectHtml = selectHtml.replace(`value="${ref.compBase}"`, `value="${ref.compBase}" selected`);
+            }
+            let strFator = ref.fator.toString().replace('.', ',');
+            let classDif = ref.refDif < 0 ? 'alert-text' : 'color: var(--success); font-weight: bold;';
+
+            html += `
+                <tr>
+                    <td class="center">
+                        <select onchange="updateReflexo('${tipo}', ${idx}, 'compBase', this.value)" style="width: 175px; padding: 6px 8px; font-size: 1.02em;">
+                            ${selectHtml}
+                        </select>
+                    </td>
+                    <td class="center" style="font-weight: bold; color: var(--primary-dark);">${fmtMoeda(ref.difBase)}</td>
+                    <td class="center">
+                        <input type="text" value="${strFator}" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')" onblur="updateReflexo('${tipo}', ${idx}, 'fator', this.value)" style="width: 78px; text-align: center; padding: 6px 8px; font-size: 1.02em;">
+                    </td>
+                    <td class="right">${fmtMoeda(ref.refRec)}</td>
+                    <td class="right">${fmtMoeda(ref.refDev)}</td>
+                    <td class="right" style="${classDif}">${fmtMoeda(ref.refDif)}</td>
+                    <td class="left">
+                        <input type="text" value="${ref.obs}" onblur="updateReflexo('${tipo}', ${idx}, 'obs', this.value)" style="width: 96%; padding: 6px 8px; font-size: 1.02em;" placeholder="Ex: Proporcional 6/12...">
+                    </td>
+                    <td class="center"><button class="btn btn-danger" style="padding: 4px 8px;" onclick="removeReflexo('${tipo}', ${idx})" title="Remover Reflexo">X</button></td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    function addReflexo(tipo) {
+        state.reflexos[tipo].push({
+            compBase: '', fator: (tipo === 'natalina' ? 1.0 : 0.333333),
+            recBase: 0, devBase: 0, difBase: 0,
+            refRec: 0, refDev: 0, refDif: 0, obs: ''
+        });
+        renderAllReflexos();
+    }
+
+    function removeReflexo(tipo, idx) {
+        state.reflexos[tipo].splice(idx, 1);
+        renderAllReflexos();
+        autoSaveState();
+    }
+
+    function updateReflexo(tipo, idx, field, value) {
+        let ref = state.reflexos[tipo][idx];
+        if (field === 'fator') {
+            let parsed = parseFloat(value.replace(',', '.'));
+            ref.fator = isNaN(parsed) ? (tipo === 'natalina' ? 1.0 : 0.333333) : parsed;
+        } else {
+            ref[field] = value;
+        }
+        
+        if (field === 'compBase' || field === 'fator') {
+            let res = state.resultados.find(r => r.comp === ref.compBase);
+            if (res) {
+                ref.recBase = res.totalRec;
+                ref.devBase = res.totalDev;
+                ref.difBase = res.dif;
+                ref.refRec = ref.recBase * ref.fator;
+                ref.refDev = ref.devBase * ref.fator;
+                ref.refDif = ref.refDev - ref.refRec;
+            } else {
+                ref.recBase = 0; ref.devBase = 0; ref.difBase = 0;
+                ref.refRec = 0; ref.refDev = 0; ref.refDif = 0;
+            }
+        }
+        renderAllReflexos();
+        autoSaveState();
+    }
+
+    function recalcAllReflexos() {
+        ['natalina', 'ferias'].forEach(tipo => {
+            state.reflexos[tipo].forEach(ref => {
+                let res = state.resultados.find(r => r.comp === ref.compBase);
+                if (res) {
+                    ref.recBase = res.totalRec;
+                    ref.devBase = res.totalDev;
+                    ref.difBase = res.dif;
+                    ref.refRec = ref.recBase * ref.fator;
+                    ref.refDev = ref.devBase * ref.fator;
+                    ref.refDif = ref.refDev - ref.refRec;
+                } else {
+                    ref.recBase = 0; ref.devBase = 0; ref.difBase = 0;
+                    ref.refRec = 0; ref.refDev = 0; ref.refDif = 0;
+                }
+            });
+        });
+        renderAllReflexos();
+    }
+
+    function atualizarResumoReflexos() {
+        let tAba3 = state.resultados.reduce((acc, r) => acc + r.dif, 0);
+        let tNat = state.reflexos.natalina.reduce((acc, r) => acc + r.refDif, 0);
+        let tFer = state.reflexos.ferias.reduce((acc, r) => acc + r.refDif, 0);
+        let tGeral = tAba3 + tNat + tFer;
+        
+        let elTot3 = document.getElementById('resRefAba3'); if(elTot3) elTot3.innerText = fmtMoeda(tAba3);
+        let elTotNat = document.getElementById('resRefNat'); if(elTotNat) elTotNat.innerText = fmtMoeda(tNat);
+        let elTotFer = document.getElementById('resRefFer'); if(elTotFer) elTotFer.innerText = fmtMoeda(tFer);
+        let elTotGeral = document.getElementById('resRefGeral'); if(elTotGeral) elTotGeral.innerText = fmtMoeda(tGeral);
+    }
+
+    function gerarTextoObservacoesReflexos() {
+        let natComps = state.reflexos.natalina.filter(r => r.compBase).map(r => r.compBase);
+        let ferComps = state.reflexos.ferias.filter(r => r.compBase).map(r => r.compBase);
+        
+        let txt = '';
+        if (natComps.length > 0) {
+            txt += `<p><strong>Reflexos de Gratificação Natalina:</strong> Foram considerados reflexos em gratificação natalina nas competências: ${natComps.join(', ')}.</p>`;
+        }
+        if (ferComps.length > 0) {
+            txt += `<p><strong>Reflexos de 1/3 de Férias:</strong> Foram considerados reflexos em 1/3 de férias nas competências: ${ferComps.join(', ')}.</p>`;
+        }
+        if (txt !== '') {
+            txt += `<p><small>Os reflexos foram calculados com base nos valores mensais apurados no demonstrativo principal, aplicando-se os fatores correspondentes.</small></p>`;
+        }
+        return txt;
     }
 
     // --- EXPORTAÇÃO EXCEL (SheetJS) ---
@@ -677,7 +959,6 @@
 
         const wb = XLSX.utils.book_new();
 
-        // ABA 1: RESUMO
         let dataResumo = [
             ["Resumo da Equiparação Salarial"],
             ["Competência", "Total Recebido (R$)", "Total Devido (R$)", "Diferença Apurada (R$)"]
@@ -689,9 +970,8 @@
         });
         dataResumo.push(["TOTAIS", totR, totD, totDif]);
         const wsResumo = XLSX.utils.aoa_to_sheet(dataResumo);
-        XLSX.utils.book_append_sheet(wb, wsResumo, "Resumo");
+        XLSX.utils.book_append_sheet(wb, wsResumo, "Resumo Principal");
 
-        // ABA 2: DETALHAMENTO
         let ativasRec = state.rubricas.rec.filter(r => r.ativa);
         let ativasDev = state.rubricas.dev.filter(r => r.ativa);
 
@@ -703,7 +983,6 @@
         headDetalhe.push("VB Devido");
         ativasDev.forEach(r => headDetalhe.push(`${r.nome} Dev.`));
         headDetalhe.push("Total Devido");
-        
         headDetalhe.push("Diferença");
 
         let dataDetalhe = [ ["Detalhamento Completo"], headDetalhe ];
@@ -712,9 +991,46 @@
             dataDetalhe.push(row);
         });
         const wsDetalhe = XLSX.utils.aoa_to_sheet(dataDetalhe);
-        XLSX.utils.book_append_sheet(wb, wsDetalhe, "Detalhamento");
+        XLSX.utils.book_append_sheet(wb, wsDetalhe, "Detalhamento Aba 3");
 
-        // ABA 3: PARÂMETROS
+        // Aba Reflexos no Excel
+        if(state.reflexos.natalina.length > 0 || state.reflexos.ferias.length > 0) {
+            let dataReflexos = [ ["Demonstrativo de Reflexos Financeiros"] ];
+            
+            if(state.reflexos.natalina.length > 0) {
+                dataReflexos.push([]);
+                dataReflexos.push(["A) Reflexos de Gratificação Natalina"]);
+                dataReflexos.push(["Competência Base", "Dif. Base", "Fator", "Ref. Recebido", "Ref. Devido", "Dif. Reflexo", "Observação"]);
+                state.reflexos.natalina.forEach(r => {
+                    dataReflexos.push([r.compBase, r.difBase, r.fator, r.refRec, r.refDev, r.refDif, r.obs]);
+                });
+            }
+
+            if(state.reflexos.ferias.length > 0) {
+                dataReflexos.push([]);
+                dataReflexos.push(["B) Reflexos de 1/3 de Férias"]);
+                dataReflexos.push(["Competência Base", "Dif. Base", "Fator", "Ref. Recebido", "Ref. Devido", "Dif. Reflexo", "Observação"]);
+                state.reflexos.ferias.forEach(r => {
+                    dataReflexos.push([r.compBase, r.difBase, r.fator, r.refRec, r.refDev, r.refDif, r.obs]);
+                });
+            }
+
+            let tAba3 = state.resultados.reduce((acc, r) => acc + r.dif, 0);
+            let tNat = state.reflexos.natalina.reduce((acc, r) => acc + r.refDif, 0);
+            let tFer = state.reflexos.ferias.reduce((acc, r) => acc + r.refDif, 0);
+            let tGeral = tAba3 + tNat + tFer;
+
+            dataReflexos.push([]);
+            dataReflexos.push(["C) Resumo Final dos Reflexos"]);
+            dataReflexos.push(["Total Diferença Principal", tAba3]);
+            dataReflexos.push(["Total Reflexos Natalina", tNat]);
+            dataReflexos.push(["Total Reflexos 1/3 Férias", tFer]);
+            dataReflexos.push(["TOTAL GERAL COM REFLEXOS", tGeral]);
+
+            const wsReflexos = XLSX.utils.aoa_to_sheet(dataReflexos);
+            XLSX.utils.book_append_sheet(wb, wsReflexos, "Reflexos");
+        }
+
         autoSaveState();
         let p = state.meta;
         let dataParams = [
@@ -733,7 +1049,6 @@
         const wsParams = XLSX.utils.aoa_to_sheet(dataParams);
         XLSX.utils.book_append_sheet(wb, wsParams, "Parâmetros");
 
-        // Salvar Arquivo
         let nomeAuto = (p.procAutor || 'NOME').split(' ')[0].toUpperCase();
         let ds = new Date().toISOString().slice(0,10).replace(/-/g, '');
         XLSX.writeFile(wb, `Calculo_Equiparacao_${nomeAuto}_${ds}.xlsx`);
@@ -777,7 +1092,60 @@
         `;
 
         let tblClone = document.getElementById('tblRelatorio').cloneNode(true);
-        html += tblClone.outerHTML;
+        tblClone.querySelectorAll('thead th').forEach(th => {
+            if (/qualif|qualifica/i.test(th.textContent)) {
+                const small = th.querySelector('small') ? th.querySelector('small').outerHTML : '';
+                th.innerHTML = `IQ${small ? '<br>' + small : ''}`;
+            }
+        });
+        html += tblClone.outerHTML; 
+        
+        // Incluir Reflexos no PDF se houver
+        if(state.reflexos.natalina.length > 0 || state.reflexos.ferias.length > 0) {
+            html += `<div class="print-reflexos-box">`;
+            html += `<h3 style="font-size: 11pt; color: var(--primary-dark); margin-top: 20px; border-bottom: 1px solid #ccc;">Demonstrativo de Reflexos</h3>`;
+            
+            if(state.reflexos.natalina.length > 0) {
+                html += `<h4 style="margin-top: 10px; font-size: 9pt; color: var(--info);">A) Gratificação Natalina</h4>`;
+                let tblNat = document.getElementById('tblReflexosNatalina').cloneNode(true);
+                tblNat.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove()); // Remove botão de ação
+                tblNat.querySelectorAll('select, input').forEach(el => {
+                    let val = el.tagName === 'SELECT' ? el.options[el.selectedIndex].text : el.value;
+                    let parent = el.parentNode;
+                    parent.innerHTML = val;
+                });
+                html += tblNat.outerHTML;
+            }
+            
+            if(state.reflexos.ferias.length > 0) {
+                html += `<h4 style="margin-top: 15px; font-size: 9pt; color: var(--primary);">B) 1/3 de Férias</h4>`;
+                let tblFer = document.getElementById('tblReflexosFerias').cloneNode(true);
+                tblFer.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
+                tblFer.querySelectorAll('select, input').forEach(el => {
+                    let val = el.tagName === 'SELECT' ? el.options[el.selectedIndex].text : el.value;
+                    let parent = el.parentNode;
+                    parent.innerHTML = val;
+                });
+                html += tblFer.outerHTML;
+            }
+
+            let tAba3 = state.resultados.reduce((acc, r) => acc + r.dif, 0);
+            let tNat = state.reflexos.natalina.reduce((acc, r) => acc + r.refDif, 0);
+            let tFer = state.reflexos.ferias.reduce((acc, r) => acc + r.refDif, 0);
+            let tGeral = tAba3 + tNat + tFer;
+
+            html += `
+            <div class="print-totais-line" style="margin-top: 15px;">
+                <div class="total-item"><span>Total Diferença Principal</span><strong>${fmtMoeda(tAba3)}</strong></div>
+                <div class="total-item"><span>Total Ref. Natalina</span><strong>${fmtMoeda(tNat)}</strong></div>
+                <div class="total-item"><span>Total Ref. Férias</span><strong>${fmtMoeda(tFer)}</strong></div>
+                <div class="total-item total-destaque" style="background: var(--success);"><span>TOTAL GERAL COM REFLEXOS</span><strong>${fmtMoeda(tGeral)}</strong></div>
+            </div>
+            `;
+            
+            html += `<div class="print-obs-reflexos" style="margin-top: 15px; padding: 10px; background: #f9f9f9; border: 1px dashed #ccc;">${gerarTextoObservacoesReflexos()}</div>`;
+            html += `</div>`;
+        }
 
         if (p.obsFinais && p.obsFinais.trim() !== '') {
             html += `<div style="margin-top: 20px; font-size: 8.5pt; page-break-inside: avoid;"><strong>Observações Finais:</strong><br>${p.obsFinais.replace(/\n/g, '<br>')}</div>`;
@@ -842,7 +1210,6 @@
                 }
                 
                 if (j.rubricas) {
-                    // Garantia de retrocompatibilidade para versões antigas do JSON
                     ['rec', 'dev'].forEach(tipo => {
                         j.rubricas[tipo].forEach((r, idx) => {
                             if (r.isExtra === undefined && idx >= 4) {
@@ -859,10 +1226,20 @@
                     });
                     state.faixas = j.faixas;
                 }
+
+                if (j.reflexos) {
+                    state.reflexos = j.reflexos;
+                } else {
+                    state.reflexos = { natalina: [], ferias: [] };
+                }
+
+                // Preservar resultados se existirem para o render correto dos selects
+                if (j.resultados) state.resultados = j.resultados;
                 
                 renderRubricas();
                 renderFaixas('rec');
                 renderFaixas('dev');
+                renderAllReflexos();
                 document.getElementById('relatorioContainer').classList.add('hidden');
                 alert("Projeto carregado com sucesso!");
             } catch (err) {
@@ -879,16 +1256,17 @@
         
         state.faixas = { rec: [], dev: [] };
         state.resultados = [];
+        state.reflexos = { natalina: [], ferias: [] };
         state.rubricas = {
             rec: [
                 { id: 'r1', ativa: false, nome: 'Anuênio', percent: 5.00, isExtra: false },
-                { id: 'r2', ativa: false, nome: 'Índice de Qualificação (IQ)', percent: 10.00, isExtra: false },
+                { id: 'r2', ativa: false, nome: 'Índice de Qualif. (IQ)', percent: 10.00, isExtra: false },
                 { id: 'r3', ativa: false, nome: 'Insalubridade', percent: 20.00, isExtra: false },
                 { id: 'r4', ativa: false, nome: 'Adicional Noturno', percent: 25.00, isExtra: false }
             ],
             dev: [
                 { id: 'd1', ativa: false, nome: 'Anuênio', percent: 5.00, isExtra: false },
-                { id: 'd2', ativa: false, nome: 'Índice de Qualificação (IQ)', percent: 10.00, isExtra: false },
+                { id: 'd2', ativa: false, nome: 'Índice de Qualif. (IQ)', percent: 10.00, isExtra: false },
                 { id: 'd3', ativa: false, nome: 'Insalubridade', percent: 20.00, isExtra: false },
                 { id: 'd4', ativa: false, nome: 'Adicional Noturno', percent: 25.00, isExtra: false }
             ]
@@ -897,6 +1275,7 @@
         renderRubricas();
         renderFaixas('rec');
         renderFaixas('dev');
+        renderAllReflexos();
         document.getElementById('relatorioContainer').classList.add('hidden');
     }
 </script>
